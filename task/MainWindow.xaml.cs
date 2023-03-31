@@ -1,28 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace task
+namespace task;
+
+/// <summary>
+///     Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private const int MAX_COPIES = 3;
+    private static Semaphore? mainAppSemaphore;
+
+    private readonly string[] Guids = new string[MAX_COPIES]
     {
-        public MainWindow()
+        "{84079a08-eb1c-4045-941e-08a5f337d471}", "{84079a08-eb1c-4045-941e-08a5f337d472}",
+        "{84079a08-eb1c-4045-941e-08a5f337d473}"
+    };
+
+    public MainWindow()
+    {
+        bool createdNew;
+        for (var i = 0; i < MAX_COPIES; i++)
         {
-            InitializeComponent();
+            mainAppSemaphore = new Semaphore(MAX_COPIES, MAX_COPIES, Guids[i], out createdNew);
+            if (!createdNew)
+            {
+                if (i == MAX_COPIES - 1)
+                {
+                    Close();
+                    return;
+                }
+            }
+            else
+            {
+                break;
+            }
         }
+
+        InitializeComponent();
     }
 }
