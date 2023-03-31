@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -13,12 +14,14 @@ namespace task;
 public partial class MainWindow : Window
 {
     private const int MaxCopies = 3;
+
+    //private const string Guid = "{84079a08-eb1c-4045-941e-08a5f337d471}";
     private const string Guid = "{84079a08-eb1c-4045-941e-08a5f337d471}";
     private static readonly Semaphore? MainAppSemaphore = new(MaxCopies, MaxCopies, Guid);
-    private readonly Task[] arraytasks = new Task[2];
-
+    private readonly Task[] _arraytasks = new Task[2];
+    Mutex _mutex = new Mutex();
     private readonly Random rnd = new();
-    public SynchronizationContext uiContext;
+    private readonly SynchronizationContext _uiContext;
 
     public MainWindow()
     {
@@ -27,6 +30,7 @@ public partial class MainWindow : Window
             try
             {
                 InitializeComponent();
+                _uiContext = SynchronizationContext.Current;
                 WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
             catch (Exception ex)
@@ -48,9 +52,8 @@ public partial class MainWindow : Window
             Thread1Message.Text = "";
             Thread2Message.Text = "";
             Thread3Message.Text = "";
-            arraytasks[3] = Task.Factory.StartNew(Thread1Function);
-            //arraytasks[4] = arraytasks[3].ContinueWith(ThreadFunction5);
-            //arraytasks[5] = arraytasks[3].ContinueWith(ThreadFunction6);
+            // Запуск 1 потока.
+            _arraytasks[0] = Task.Factory.StartNew(Thread1Function);
         }
         catch (Exception ex)
         {
@@ -69,18 +72,18 @@ public partial class MainWindow : Window
     {
         try
         {
-            var file = new FileStream("../../garbage/array.txt", FileMode.Create, FileAccess.Write);
-            var writer = new BinaryWriter(file);
+            var file = new FileStream("../../../garbage/array.txt", FileMode.Create, FileAccess.Write);
+            var writer = new StreamWriter(file);
             var range = rnd.Next(1000);
             for (var i = 0; i < 1000; i++)
             {
-                var n = rnd.Next(range);
-                writer.Write(n);
+                var n = rnd.Next(range).ToString();
+                writer.WriteLine(n);
             }
 
             writer.Close();
             file.Close();
-            uiContext.Send(d => Thread1Message.Text = "Файл с числовыми данными создан!", null);
+            _uiContext.Send(d => Thread1Message.Text = "Файл с числовыми данными создан!", null);
         }
         catch (Exception e)
         {
@@ -90,13 +93,82 @@ public partial class MainWindow : Window
 
     private void Thread1Function()
     {
-        bool CreatedNew;
         // Создаём мьютекс 
-        var mutex = new Mutex(false, "DB744E26-72C1-4F2A-8BF8-5C31980953C7", out CreatedNew);
-        mutex.WaitOne();
-        uiContext.Send(d => Thread1Message.Text = "Поток захватил мьютекс!", null);
+        _mutex = new Mutex(true, "{84079a08-eb1c-4045-941e-08a5f337d472}");
+        _mutex.WaitOne();
+        // Запуск 2 потока, который будет ожидать завершения работы первого потока.
+        _arraytasks[1] = Task.Factory.StartNew(Thread2Function);
+        _uiContext.Send(d => Thread1Message.Text = "1 поток захватил мьютекс!", null);
+        Thread.Sleep(1000);
         GeneratorOfNumbers();
-        mutex.ReleaseMutex();
+        _mutex.ReleaseMutex();
+    }
+
+    #endregion
+
+    #region 2 поток
+
+    private void Thread2Function()
+    {
+        _mutex.WaitOne();
+        _uiContext.Send(d => Thread1Message.Text = "2 поток захватил мьютекс!", null);
+        Thread.Sleep(1000);
+        ParseFileForPrimes();
+        _mutex.ReleaseMutex();
+    }
+
+    public static void ParseFileForPrimes()
+    {
+        string inputFile = "../../../garbage/array.txt";
+        string outputFile = "../../../garbage/arrayPrimesOnly.txt";
+        List<int> primes = new List<int>();
+        using (StreamReader sr = new StreamReader(inputFile))
+        {
+            string line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                // Split the line into individual numbers
+                string[] numbers = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Parse each number and check if it's prime
+                foreach (string number in numbers)
+                {
+                    int n;
+                    if (int.TryParse(number, out n) && IsPrime(n))
+                    {
+                        primes.Add(n);
+                    }
+                }
+            }
+        }
+
+        // Write the primes to the output file
+        using (StreamWriter sw = new StreamWriter(outputFile))
+        {
+            foreach (int prime in primes)
+            {
+                sw.Write(prime + " ");
+            }
+        }
+    }
+
+    // Helper function to check if a number is prime
+    public static bool IsPrime(int n)
+    {
+        if (n <= 1)
+        {
+            return false;
+        }
+
+        for (int i = 2; i <= Math.Sqrt(n); i++)
+        {
+            if (n % i == 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     #endregion
