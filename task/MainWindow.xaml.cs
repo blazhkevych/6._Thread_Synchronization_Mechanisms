@@ -1,5 +1,10 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System;
+using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Windows.Media.Imaging;
 
 namespace task;
 
@@ -27,6 +32,7 @@ public partial class MainWindow : Window
             {
                 if (i == MAX_COPIES - 1)
                 {
+                    MessageBox.Show("Вы пытаетесь открыть 4 окно ! Так делать нельзя, ай-яй-яй, но-но-но !");
                     Close();
                     return;
                 }
@@ -34,9 +40,33 @@ public partial class MainWindow : Window
             else
             {
                 break;
+
             }
         }
 
         InitializeComponent();
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
     }
+
+    //void GeneratorOfNumbers()
+    //{
+    //    try
+    //    {
+    //        FileStream file2 = new FileStream("../../array.txt", FileMode.Create, FileAccess.Write);
+    //        BinaryWriter writer = new BinaryWriter(file2);
+    //        int range = rnd.Next(1000);
+    //        for (int i = 0; i < 200000000; i++)
+    //        {
+    //            int n = rnd.Next(range);
+    //            writer.Write(n);
+    //        }
+    //        writer.Close();
+    //        file2.Close();
+    //        uiContext.Send(d => label1.Text = "Файл с числовыми данными создан!", null);
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        MessageBox.Show(e.Message);
+    //    }
+    //}
 }
