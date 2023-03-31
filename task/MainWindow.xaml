@@ -3,32 +3,34 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:task"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="450">
+        Title="MainWindow" Height="450" Width="450" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!--1 поток-->
-        <TextBox Grid.Row="0" Text="1 поток" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-        <TextBox Name="1ThreadMessage" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+        <TextBox Grid.Row="0" Text="1 поток" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <TextBox Name="Thread1Message" Grid.Row="1" HorizontalContentAlignment="Center"
+                 VerticalContentAlignment="Center" />
 
         <!--2 поток-->
-        <TextBox Grid.Row="2" Text="2 поток" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-        <TextBox Name="2ThreadMessage" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+        <TextBox Grid.Row="2" Text="2 поток" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <TextBox Name="Thread2Message" Grid.Row="3" HorizontalContentAlignment="Center"
+                 VerticalContentAlignment="Center" />
 
         <!--3 поток-->
-        <TextBox Grid.Row="4" Text="3 поток" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-        <TextBox Name="3ThreadMessage" Grid.Row="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+        <TextBox Grid.Row="4" Text="3 поток" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <TextBox Name="Thread3Message" Grid.Row="5" HorizontalContentAlignment="Center"
+                 VerticalContentAlignment="Center" />
 
-        <Button Grid.Row="6" Name="Start" >Пуск</Button>
+        <Button Grid.Row="6" Name="Start" Click="Start_Click">Пуск</Button>
     </Grid>
 </Window>
