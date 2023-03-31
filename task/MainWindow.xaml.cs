@@ -15,28 +15,19 @@ public partial class MainWindow : Window
 {
     private const int MaxCopies = 3;
 
-    //private const string Guid = "{84079a08-eb1c-4045-941e-08a5f337d471}";
     private const string Guid = "{84079a08-eb1c-4045-941e-08a5f337d471}";
-    private static readonly Semaphore? MainAppSemaphore = new(MaxCopies, MaxCopies, Guid);
+    private static readonly Semaphore MainAppSemaphore = new(MaxCopies, MaxCopies, Guid);
     private readonly Task[] _arraytasks = new Task[2];
-    Mutex _mutex = new Mutex();
-    private readonly Random rnd = new();
     private readonly SynchronizationContext _uiContext;
+    private readonly Random rnd = new();
+    private Mutex _mutex = new();
 
     public MainWindow()
     {
-        if (MainAppSemaphore != null && MainAppSemaphore.WaitOne(0))
+        if (MainAppSemaphore.WaitOne(0))
         {
-            try
-            {
-                InitializeComponent();
-                _uiContext = SynchronizationContext.Current;
-                WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            InitializeComponent();
+            _uiContext = SynchronizationContext.Current;
         }
         else
         {
@@ -110,7 +101,7 @@ public partial class MainWindow : Window
 
     private void Thread2Function()
     {
-        _mutex.WaitOne();
+        _mutex.WaitOne(0);
         _uiContext.Send(d => Thread1Message.Text = "2 поток захватил мьютекс!", null);
         Thread.Sleep(1000);
         ParseFileForPrimes();
@@ -119,54 +110,41 @@ public partial class MainWindow : Window
 
     public static void ParseFileForPrimes()
     {
-        string inputFile = "../../../garbage/array.txt";
-        string outputFile = "../../../garbage/arrayPrimesOnly.txt";
-        List<int> primes = new List<int>();
-        using (StreamReader sr = new StreamReader(inputFile))
+        var inputFile = "../../../garbage/array.txt";
+        var outputFile = "../../../garbage/arrayPrimesOnly.txt";
+        var primes = new List<int>();
+        using (var sr = new StreamReader(inputFile))
         {
             string line;
             while ((line = sr.ReadLine()) != null)
             {
                 // Split the line into individual numbers
-                string[] numbers = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var numbers = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 // Parse each number and check if it's prime
-                foreach (string number in numbers)
+                foreach (var number in numbers)
                 {
                     int n;
-                    if (int.TryParse(number, out n) && IsPrime(n))
-                    {
-                        primes.Add(n);
-                    }
+                    if (int.TryParse(number, out n) && IsPrime(n)) primes.Add(n);
                 }
             }
         }
 
         // Write the primes to the output file
-        using (StreamWriter sw = new StreamWriter(outputFile))
+        using (var sw = new StreamWriter(outputFile))
         {
-            foreach (int prime in primes)
-            {
-                sw.Write(prime + " ");
-            }
+            foreach (var prime in primes) sw.Write(prime + " ");
         }
     }
 
     // Helper function to check if a number is prime
     public static bool IsPrime(int n)
     {
-        if (n <= 1)
-        {
-            return false;
-        }
+        if (n <= 1) return false;
 
-        for (int i = 2; i <= Math.Sqrt(n); i++)
-        {
+        for (var i = 2; i <= Math.Sqrt(n); i++)
             if (n % i == 0)
-            {
                 return false;
-            }
-        }
 
         return true;
     }
