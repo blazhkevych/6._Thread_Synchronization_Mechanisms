@@ -1,10 +1,7 @@
-﻿using System.IO;
-using System;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Windows.Media.Imaging;
 
 namespace task;
 
@@ -40,7 +37,6 @@ public partial class MainWindow : Window
             else
             {
                 break;
-
             }
         }
 
@@ -48,18 +44,19 @@ public partial class MainWindow : Window
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
     }
 
-    //void GeneratorOfNumbers()
+    //private void GeneratorOfNumbers()
     //{
     //    try
     //    {
-    //        FileStream file2 = new FileStream("../../array.txt", FileMode.Create, FileAccess.Write);
-    //        BinaryWriter writer = new BinaryWriter(file2);
+    //        var file2 = new FileStream("../../array.txt", FileMode.Create, FileAccess.Write);
+    //        var writer = new BinaryWriter(file2);
     //        int range = rnd.Next(1000);
-    //        for (int i = 0; i < 200000000; i++)
+    //        for (var i = 0; i < 200000000; i++)
     //        {
     //            int n = rnd.Next(range);
     //            writer.Write(n);
     //        }
+
     //        writer.Close();
     //        file2.Close();
     //        uiContext.Send(d => label1.Text = "Файл с числовыми данными создан!", null);
