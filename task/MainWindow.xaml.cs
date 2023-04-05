@@ -17,7 +17,7 @@ public partial class MainWindow : Window
     private readonly Task[] _arraytasks = new Task[3];
     private readonly SynchronizationContext _uiContext;
     private readonly Random rnd = new();
-    private Mutex _mutex = new();
+    //private Mutex _mutex = new();
 
     public MainWindow()
     {
@@ -92,14 +92,14 @@ public partial class MainWindow : Window
     {
         bool CreatedNew;
         // Создаём мьютекс 
-        _mutex = new Mutex(false, "84079a08-eb1c-4045-941e-08a5f337d471", out CreatedNew);
-        _mutex.WaitOne();
+        Mutex mutex = new Mutex(false, "84079a08-eb1c-4045-941e-08a5f337d471", out CreatedNew);
+        mutex.WaitOne();
         // Запуск 2 потока, который будет ожидать завершения работы первого потока.
         _arraytasks[1] = Task.Factory.StartNew(Thread2Function);
         _uiContext.Send(d => Thread1Message.Text = "1 поток захватил мьютекс!", null);
         Thread.Sleep(2000);
         GeneratorOfNumbers();
-        _mutex.ReleaseMutex();
+        mutex.ReleaseMutex();
     }
 
     #endregion
@@ -110,14 +110,14 @@ public partial class MainWindow : Window
     {
         bool CreatedNew;
         // Создаём мьютекс 
-        _mutex = new Mutex(false, "84079a08-eb1c-4045-941e-08a5f337d471", out CreatedNew);
-        _mutex.WaitOne();
+        Mutex mutex = new Mutex(false, "84079a08-eb1c-4045-941e-08a5f337d471", out CreatedNew);
+        mutex.WaitOne();
         // Запуск 3 потока, который будет ожидать завершения работы первого потока.
         _arraytasks[2] = Task.Factory.StartNew(Thread3Function);
         _uiContext.Send(d => Thread2Message.Text = "2 поток захватил мьютекс!", null);
         Thread.Sleep(2000);
         ParseFileForPrimes();
-        _mutex.ReleaseMutex();
+        mutex.ReleaseMutex();
     }
 
     private void ParseFileForPrimes()
@@ -170,12 +170,12 @@ public partial class MainWindow : Window
     {
         bool CreatedNew;
         // Создаём мьютекс 
-        _mutex = new Mutex(false, "84079a08-eb1c-4045-941e-08a5f337d471", out CreatedNew);
-        _mutex.WaitOne();
+        Mutex mutex = new Mutex(false, "84079a08-eb1c-4045-941e-08a5f337d471", out CreatedNew);
+        mutex.WaitOne();
         _uiContext.Send(d => Thread3Message.Text = "3 поток захватил мьютекс!", null);
         Thread.Sleep(2000);
         CreateFileWithNumbersEndingInSeven();
-        _mutex.ReleaseMutex();
+        mutex.ReleaseMutex();
     }
 
     private void CreateFileWithNumbersEndingInSeven()
