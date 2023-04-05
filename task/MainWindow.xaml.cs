@@ -17,7 +17,6 @@ public partial class MainWindow : Window
     private readonly Task[] _arraytasks = new Task[3];
     private readonly SynchronizationContext _uiContext;
     private readonly Random rnd = new();
-    //private Mutex _mutex = new();
 
     public MainWindow()
     {
