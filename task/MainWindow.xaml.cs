@@ -8,9 +8,6 @@ using System.Windows;
 
 namespace task;
 
-/// <summary>
-///     Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
     private const int MaxCopies = 3;
@@ -149,6 +146,7 @@ public partial class MainWindow : Window
         {
             foreach (var prime in primes) sw.Write(prime + " ");
         }
+
         _uiContext.Send(d => Thread2Message.Text = "Файл с простыми числами создан!", null);
     }
 
@@ -206,7 +204,9 @@ public partial class MainWindow : Window
         {
             foreach (var numberEndingInSeven in numbersEndingInSeven) sw.Write(numberEndingInSeven + " ");
         }
-        _uiContext.Send(d => Thread3Message.Text = "Файл с простыми числами, у которых последняя цифра равна 7, создан!", null);
+
+        _uiContext.Send(
+            d => Thread3Message.Text = "Файл с простыми числами, у которых последняя цифра равна 7, создан!", null);
     }
 
     #endregion
